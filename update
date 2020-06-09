@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+
+import os
+import requests
+
+from bs4 import BeautifulSoup
+
+def scrape_country_populations():
+    page = requests.get("https://en.wikipedia.org/wiki/List_of_countries_by_population_(United_Nations)")
+    soup = BeautifulSoup(page.content, 'html.parser')
+    rows = soup.find_all('tr')
+    data = {}
+    for r in rows:
+        tds = list(r.find_all('td'))
+        if len(tds) != 6:
+            continue
+        name = tds[0].get_text().strip()
+        population = tds[4].get_text()
+        # Remove references.
+        if "[" in name:
+            name = name.split("[")[0]
+        data[name] = int(population.replace(",", ""))
+    return data
+
+def get_current_country_data():
+    data = []
+    with open("countries.data") as f:
+        countries = [l.strip() for l in f.readlines()]
+        for c in countries:
+            data.append(c.split(":"))
+        f.close()
+    return data
+
+def find_code_for_country_name(country_info, name):
+    for datum in country_info:
+        current_code = datum[0]
+        current_name = datum[1]
+        if current_name.lower() == name.lower():
+            return current_code
+    print("Could not find " + name)
+    return None
+
+def write_updated_data(pop, current):
+    #os.remove("countries.data")
+
+    code_to_population = {}
+    for name in pop:
+        code = find_code_for_country_name(current, name)
+        if not code:
+            continue
+        code_to_population[code] = pop[name]
+    print(code_to_population)
+
+    output = []
+    for c in current:
+        code = c[0]
+        if code not in code_to_population:
+            output.append(":".join(c))
+            continue
+        population = code_to_population[code]
+        name = c[1]
+        if len(c) == 3:
+            # No population here yet
+            c.insert(2, str(population))
+        elif len(c) == 4:
+            # We already have a population, let's overwrite that
+            c[2] = str(population)
+        output.append(":".join(c))
+
+    with open("countries.data", "w") as f:
+        f.write("\n".join(output))
+        f.close()
+
+if __name__ == "__main__":
+    populations = scrape_country_populations()
+    current = get_current_country_data()
+    write_updated_data(populations, current)
+    # print(current)
+    # print(data)
