@@ -37,11 +37,15 @@ def find_code_for_country_name(country_info, name):
         current_name = datum[1]
         if current_name.lower() == name.lower():
             return current_code
+        # If we can't get an exact match, try to match a prefix.
+        if current_name.lower().startswith(name.lower()) or \
+        name.lower().startswith(current_name.lower()):
+            return current_code
     print("Could not find " + name)
     return None
 
 def write_updated_data(pop, current):
-    #os.remove("countries.data")
+    os.remove("countries.data")
 
     code_to_population = {}
     for name in pop:
@@ -49,7 +53,6 @@ def write_updated_data(pop, current):
         if not code:
             continue
         code_to_population[code] = pop[name]
-    print(code_to_population)
 
     output = []
     for c in current:
@@ -72,8 +75,9 @@ def write_updated_data(pop, current):
         f.close()
 
 if __name__ == "__main__":
+    print("Downloading new data...")
     populations = scrape_country_populations()
+    print("Updating local data...")
     current = get_current_country_data()
     write_updated_data(populations, current)
-    # print(current)
-    # print(data)
+    print("All done.")
