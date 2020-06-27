@@ -33,8 +33,8 @@ def get_current_country_data():
 
 def find_code_for_country_name(country_info, name):
     for datum in country_info:
-        current_code = datum[0]
-        current_name = datum[1]
+        current_code = datum[1]
+        current_name = datum[2]
         if current_name.lower() == name.lower():
             return current_code
         # If we can't get an exact match, try to match a prefix.
@@ -62,12 +62,12 @@ def write_updated_data(pop, current):
             continue
         population = code_to_population[code]
         name = c[1]
-        if len(c) == 3:
+        if len(c) == 4:
             # No population here yet
-            c.insert(2, str(population))
-        elif len(c) == 4:
+            c.insert(3, str(population))
+        elif len(c) == 5:
             # We already have a population, let's overwrite that
-            c[2] = str(population)
+            c[3] = str(population)
         output.append(":".join(c))
 
     with open("countries.data", "w") as f:
