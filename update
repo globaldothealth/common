@@ -27,7 +27,8 @@ def get_current_country_data():
     with open("countries.data") as f:
         countries = [l.strip() for l in f.readlines()]
         for c in countries:
-            data.append(c.split(":"))
+            parts = c.split(":")
+            data.append(parts)
         f.close()
     return data
 
@@ -56,7 +57,7 @@ def write_updated_data(pop, current):
 
     output = []
     for c in current:
-        code = c[0]
+        code = c[1]
         if code not in code_to_population:
             output.append(":".join(c))
             continue
