@@ -11,7 +11,7 @@ for l in lines:
     if l.count(":") != 4:
         print("Warning, this line doesn't have enough entries: " + l)
         continue
-    (continent, code, population, name, bboxes) = l.split(":")
+    (continent, code, name, population, bboxes) = l.split(":")
     if len(continent) != 1:
         print("Warning, continent for '" + name  + "' should be a single character")
     if len(code) != 2:
