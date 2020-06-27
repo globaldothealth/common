@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+
+import os
+
+with open("countries.data") as f:
+    lines = f.readlines()
+    f.close
+
+for l in lines:
+    l = l.strip()
+    if l.count(":") != 4:
+        print("Warning, this line doesn't have enough entries: " + l)
+        continue
+    (continent, code, population, name, bboxes) = l.split(":")
+    if len(continent) != 1:
+        print("Warning, continent for '" + name  + "' should be a single character")
+    if len(code) != 2:
+        print("Warning, country ISO code should be of length 2, but was: " + code)
