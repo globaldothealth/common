@@ -16,3 +16,5 @@ for l in lines:
         print("Warning, continent for '" + name  + "' should be a single character")
     if len(code) != 2:
         print("Warning, country ISO code should be of length 2, but was: " + code)
+    if len(population) == 0:
+        print("Warning, no population for '" + name + "'")
