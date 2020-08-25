@@ -13,7 +13,7 @@ OUT = "country_boundaries.json"
 def parse_and_append_geojson_data(existing, raw_data):
     json_object = json.loads(raw_data)
     features = json_object["features"]
-    added = 0
+    added = []
     print("Parsed " + str(len(features)) + " country boundaries")
     for f in features:
         props = f["properties"]
@@ -32,8 +32,8 @@ def parse_and_append_geojson_data(existing, raw_data):
             continue
 
         existing[code] = f["geometry"]
-        added += 1
-    print("Added " + str(added) + " boundaries")
+        added.append(code)
+    print("Added " + str(len(added)) + " boundaries for " + str(added))
 
 if __name__ == "__main__":
     COUNTRIES = {}
