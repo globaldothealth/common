@@ -4,7 +4,7 @@ import json
 import os
 
 # 50m is a good compromise between 10m (very precise but bulky) and 110m (not very precise).
-SRC_URL = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson"
+SRC_URL = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_map_units.geojson"
 OUT = "country_boundaries.json"
 
 def parse_geojson_data(raw_data):
