@@ -4,41 +4,56 @@ import json
 import os
 
 # 50m is a good compromise between 10m (very precise but bulky) and 110m (not very precise).
-SRC_URL = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_map_units.geojson"
+SRC_URLS = [
+    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_map_units.geojson",
+    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson"
+]
 OUT = "country_boundaries.json"
 
-def parse_geojson_data(raw_data):
+def parse_and_append_geojson_data(existing, raw_data):
     json_object = json.loads(raw_data)
     features = json_object["features"]
+    added = 0
     print("Parsed " + str(len(features)) + " country boundaries")
-    # print(features[0])
-    pruned_features = []
     for f in features:
         props = f["properties"]
         if "ISO_A2" not in props:
             print("No ISO country code in this feature: " + str(f))
             continue
         code = props["ISO_A2"]
+        if code == "-99":
+            # Sounds like the source means this is missing data
+            continue
         if "geometry" not in f:
             print("No geometry data for country " + code)
             continue
+        if code in existing:
+            # We already have it, skip
+            continue
 
-        pruned_features.append({
-            "code": props["ISO_A2"],
-            "geometry": f["geometry"]
-        })
-    return pruned_features
+        existing[code] = f["geometry"]
+        added += 1
+    print("Added " + str(added) + " boundaries")
 
 if __name__ == "__main__":
-    SRC_FILENAME = SRC_URL.split("/")[-1]
-    if os.path.exists(SRC_FILENAME):
-        print(SRC_FILENAME + " is already here, not redownloading.")
-    else:
-        os.system("wget " + SRC_URL)
-    with open(SRC_FILENAME) as f:
-        DATA = f.read()
-        f.close()
-    COUNTRIES = parse_geojson_data(DATA)
+    COUNTRIES = {}
+    for src in SRC_URLS:
+        print("Currently have " + str(len(COUNTRIES)) + " boundaries")
+        SRC_FILENAME = src.split("/")[-1]
+        if os.path.exists(SRC_FILENAME):
+            print(SRC_FILENAME + " is already here, not redownloading.")
+        else:
+            os.system("wget " + src)
+        with open(SRC_FILENAME) as f:
+            DATA = f.read()
+            f.close()
+            parse_and_append_geojson_data(COUNTRIES, DATA)
+    out_data = []
+    for code in sorted(COUNTRIES.keys()):
+        out_data.append({
+            'code': code,
+            'geometry': COUNTRIES[code]
+        })
     with open(OUT, "w") as f:
-        f.write(json.dumps(COUNTRIES))
+        f.write(json.dumps(out_data))
         f.close()
