@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+
+import os
+
+# 50m is a good compromise between 10m (very precise but bulky) and 110m (not very precise).
+SRC_URL = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson"
+
+
+if __name__ == "__main__":
+    SRC_FILENAME = SRC_URL.split("/")[-1]
+    if os.path.exists(SRC_FILENAME):
+        print(SRC_FILENAME + " is already here, not redownloading.")
+    else:
+        os.system("wget " + SRC_URL)
