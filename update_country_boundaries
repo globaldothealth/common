@@ -22,8 +22,13 @@ def parse_and_append_geojson_data(existing, raw_data):
             continue
         code = props["ISO_A2"]
         if code == "-99":
-            # Sounds like the source means this is missing data
-            continue
+            if props['NAME'] == "Norway":
+                # Code missing in the data. Fix sent at
+                # https://github.com/nvkelso/natural-earth-vector/pull/402
+                code = "NO"
+            else:
+                # Sounds like the source means this is missing data
+                continue
         if "geometry" not in f:
             print("No geometry data for country " + code)
             continue
