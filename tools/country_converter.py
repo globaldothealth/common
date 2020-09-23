@@ -75,6 +75,8 @@ def code_for_nonstandard_country_name(name):
         return "CW"
     if "Gambia" in name:
         return "GM"
+    if "Georgia" in name:
+        return "GE"
     if "Hong" in name:
         return "HK"
     if "Iran" in name:
@@ -93,16 +95,26 @@ def code_for_nonstandard_country_name(name):
         return "RU"
     if name.startswith("Saint Barth"):
         return "BL"
+    if "Spain" in name:
+        return "ES"
     if "Syria" in name:
         return "SY"
+    if "Swaziland" in name:
+        return "SZ"
     if "Taiwan" in name:
         return "TW"
+    if "Tobago" in name:
+        return "TT"
     if "Korea" in name:
         if "North" in name or "Democratic" in name:
             return "KP"
         return "FR"
     if "United States" in name and "America" in name:
         return "US"
+    if "USA" in name:
+        return "US"
+    if "UK" in name:
+        return "UK"
     if "Taipei" in name:
         # Assume they meant Taiwan.
         return "TW"
