@@ -34,20 +34,16 @@ def get_all_countries():
         return COUNTRIES_ISO_TO_NAME
 
 
-def country_code_from_name(name):
+def should_ignore_country(name):
+    return name in IGNORED_COUNTRY_NAMES
+
+def code_from_name(name):
     # Are we being passed something that's already a code?
     if len(name) == 2 and name == name.upper():
         return name
     if name.lower() in COUNTRIES_NAME_TO_ISO:
         return COUNTRIES_NAME_TO_ISO[name.lower()]
 
-def should_ignore_country(name):
-    return name in IGNORED_COUNTRY_NAMES
-
-def code_from_name(name):
-    code = country_code_from_name(name)
-    if code:
-        return code
     return code_for_nonstandard_country_name(name)
 
 def code_for_nonstandard_country_name(name):
@@ -73,6 +69,8 @@ def code_for_nonstandard_country_name(name):
         return "CN"
     if name.startswith("Cura") and name.endswith("ao"):
         return "CW"
+    if "France" in name:
+        return "FR"
     if "Gambia" in name:
         return "GM"
     if "Georgia" in name:
@@ -85,8 +83,12 @@ def code_for_nonstandard_country_name(name):
         return "IE"
     if "Ivo" in name:
         return "CI"
+    if "Lucia" in name and "St" in name:
+        return "LC"
     if "Macau" in name or "Macao" in name:
         return "MO"
+    if "Macedonia" in name:
+        return "MK"
     if "Martin" in name and ("Saint" in name or "St" in name):
         return "MF"
     if "Moldova" in name:
@@ -111,7 +113,7 @@ def code_for_nonstandard_country_name(name):
         return "FR"
     if "United States" in name and "America" in name:
         return "US"
-    if "USA" in name:
+    if "USA" in name or "[United States]" in name:
         return "US"
     if "UK" in name:
         return "UK"
