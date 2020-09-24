@@ -3,7 +3,7 @@ import geo_util
 import sys
 
 def extract_location_info_from_csv(rows, country_index, location_index,
-                                   lat_index, lng_index, out_file):
+                                   lat_index, lng_index):
     location_info = {}
     for row in rows:
         geoid = geo_util.make_geoid(row[lat_index], row[lng_index])
@@ -22,7 +22,7 @@ def extract_location_info_from_csv(rows, country_index, location_index,
                 location_info[geoid] = [location_str, country_code]
             else:
                 location_info[geoid] = [country_code]
-    output_location_info(location_info, out_file)
+    return location_info
 
 def compile_location_info(in_data, out_file,
                           keys=["country", "province", "city"], quiet=False):
