@@ -1,6 +1,7 @@
 LAT_LNG_DECIMAL_PLACES = 4
 
 def round_latlng(l):
+    l = str(l)
     if "." not in l:
         l += ".0000"
     (intpart, dec) = l.split(".")
