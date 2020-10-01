@@ -47,6 +47,8 @@ def code_from_name(name):
     return code_for_nonstandard_country_name(name)
 
 def code_for_nonstandard_country_name(name):
+    if "Antigua" in name and "Barbuda" in name:
+        return "AG"
     if "Brunei" in name:
         return "BN"
     if "Burma" in name:
@@ -75,6 +77,8 @@ def code_for_nonstandard_country_name(name):
         return "GM"
     if "Georgia" in name:
         return "GE"
+    if "Grenadines" in name:
+        return "VC"
     if "Hong" in name:
         return "HK"
     if "Iran" in name:
@@ -91,8 +95,12 @@ def code_for_nonstandard_country_name(name):
         return "MK"
     if "Martin" in name and ("Saint" in name or "St" in name):
         return "MF"
+    if "Micronesia" in name:
+        return "FM"
     if "Moldova" in name:
         return "MD"
+    if "Principe" in name and "Sao" in name:
+        return "ST"
     if "Russia" in name:
         return "RU"
     if name.startswith("Saint Barth"):
