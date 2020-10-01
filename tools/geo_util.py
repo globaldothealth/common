@@ -1,3 +1,6 @@
+import glob
+import os
+
 LAT_LNG_DECIMAL_PLACES = 4
 
 def round_latlng(l):
@@ -14,3 +17,9 @@ def round_latlng(l):
 
 def make_geoid(lat, lng):
     return round_latlng(lat) + "|" + round_latlng(lng)
+
+def clean():
+    for daily in glob.glob("d/*.json"):
+        os.remove(daily)
+    for country in glob.glob("c/*.json"):
+        os.remove(country)
