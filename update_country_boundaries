@@ -1,13 +1,21 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
+import csv
 import json
 import os
+import requests
+import sys
+
 
 # 50m is a good compromise between 10m (very precise but bulky) and 110m (not very precise).
 SRC_URLS = [
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_map_units.geojson",
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson"
 ]
+# Additionally get the country centroids from Google data so we don't have to guess which of the bboxes in
+# the Natural Earth data is the "canonical" view of the country (e.g. bug where zooming into New Zealand actually
+# chooses the Chatham Islands)
+CENTROID_URL = "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv"
 OUT = "country_boundaries.json"
 
 def parse_and_append_geojson_data(existing, raw_data):
@@ -53,11 +61,19 @@ if __name__ == "__main__":
             DATA = f.read()
             f.close()
             parse_and_append_geojson_data(COUNTRIES, DATA)
+    centroids_data = requests.get(CENTROID_URL)
+    if centroids_data.status_code >= 400:
+        print(f"Couldn't get centroid data: HTTP response {centroids_data.status_code}")
+        sys.exit(os.EX_DATAERR)
+    decoded_content = centroids_data.content.decode('utf-8')
+    centroids_reader = csv.DictReader(decoded_content.splitlines())
+    centroids = { c['country']: [c['latitude'], c['longitude']] for c in centroids_reader }
     out_data = []
     for code in sorted(COUNTRIES.keys()):
         out_data.append({
             'code': code,
-            'geometry': COUNTRIES[code]
+            'geometry': COUNTRIES[code],
+            'centroid': centroids.get(code, [])
         })
     with open(OUT, "w") as f:
         f.write(json.dumps(out_data))
