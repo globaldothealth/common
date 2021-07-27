@@ -1,5 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
+import json
 import os
 import requests
 
@@ -45,7 +46,13 @@ def find_code_for_country_name(country_info, name):
     print("Could not find " + name)
     return None
 
-def write_updated_data(pop, current):
+def get_centroids():
+    with open("country_boundaries.json", "r") as f:
+        boundaries = json.load(f)
+        return {o['code'] : o['centroid'] for o in boundaries}
+
+
+def write_updated_data(pop, current, centroids):
     os.remove("countries.data")
 
     code_to_population = {}
@@ -62,13 +69,20 @@ def write_updated_data(pop, current):
             output.append(":".join(c))
             continue
         population = code_to_population[code]
-        name = c[1]
         if len(c) == 4:
             # No population here yet
             c.insert(3, str(population))
         elif len(c) == 5:
             # We already have a population, let's overwrite that
             c[3] = str(population)
+        centroid = centroids.get(code,[])
+        if centroid is None or len(centroid) != 2:
+            continue
+        centroid_rep = f"{centroid[0]},{centroid[1]}"
+        if len(c) == 5:
+            c.append(centroid_rep)
+        else:
+            c[5] = centroid_rep
         output.append(":".join(c))
 
     with open("countries.data", "w") as f:
@@ -80,5 +94,8 @@ if __name__ == "__main__":
     populations = scrape_country_populations()
     print("Updating local data...")
     current = get_current_country_data()
-    write_updated_data(populations, current)
+    print("Getting centroid info...")
+    centroids = get_centroids()
+    print("Writing out...")
+    write_updated_data(populations, current, centroids)
     print("All done.")
