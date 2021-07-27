@@ -78,7 +78,7 @@ def write_updated_data(pop, current, centroids):
         centroid = centroids.get(code,[])
         if centroid is None or len(centroid) != 2:
             continue
-        centroid_rep = f"{centroid[0]},{centroid[1]}"
+        centroid_rep = json.dumps(centroid)
         if len(c) == 5:
             c.append(centroid_rep)
         else:
